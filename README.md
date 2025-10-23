@@ -42,7 +42,7 @@ For development:
 
 ```bash
 git clone https://github.com/danielols3n/elektropy.git
-cd circuitpy
+cd elektropy
 pip install -e .
 ```
 

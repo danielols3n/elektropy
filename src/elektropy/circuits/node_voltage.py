@@ -11,7 +11,7 @@ def node_voltage(equations, variables) -> dict:
     variables (list): A list of sympy symbols representing the node voltages to solve for.
     """
     symbols = sp.symbols(variables) 
-    expressions = [sp.sympyify(eq) for eq in equations]
+    expressions = [sp.sympify(eq) for eq in equations]
     solutions = sp.solve(expressions, symbols)
 
     if not solutions: 
