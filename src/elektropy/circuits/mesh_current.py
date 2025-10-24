@@ -1,6 +1,6 @@
 import sympy as sp
 
-def mesh_current(equations, variables) -> dict:
+def mesh_current(equations, variables, decimals = 5) -> dict:
     """
     Solve a system of equations using the Mesh Current Method.
     """
@@ -17,6 +17,6 @@ def mesh_current(equations, variables) -> dict:
     if not solutions: 
         raise ValueError("No solution found for the given equations.")
     
-    result = {str(var): float(solutions[0][var]) for var in symbols}
+    result = {str(var): f"{round(float(solutions[var]), decimals)} A" for var in symbols}
 
     return result

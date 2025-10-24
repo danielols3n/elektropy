@@ -8,7 +8,9 @@ from .digitals.binary import (
     binary_to_hexadecimal,
     hexadecimal_to_binary, 
     decimal_to_twos_comp,
-    twos_comp_to_decimal
+    twos_comp_to_decimal,
+    decimal_to_hexadecimal,
+    hexadecimal_to_decimal
 )
 from .digitals.simplify_logic import simplify_logic
 from .digitals.truth_table import truth_table
@@ -41,5 +43,7 @@ __all__ = [
     "wheatstone_balance_resistance",
     "wheatstone_balance_voltage",
     "wheatstone_resistance",
-    "wheatstone_voltage"
+    "wheatstone_voltage",
+    "decimal_to_hexadecimal",
+    "hexadecimal_to_decimal",
 ]

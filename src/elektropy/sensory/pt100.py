@@ -9,7 +9,7 @@ def pt100_resistance(temperature_celsius: float, R0: float = 100.0, A: float = 3
     """  
 
     R = (R0 * (1 + A * (temperature_celsius)) + (B * temperature_celsius**2))
-    return R
+    return f"{R} Ω"
 
 def pt100_temperature(resistance_ohms: float, R0: float = 100.0, A: float = 3.9083e-3, B: float = -5.775e-7) -> float:
     """
@@ -30,4 +30,4 @@ def pt100_temperature(resistance_ohms: float, R0: float = 100.0, A: float = 3.90
     temp2 = (-A - sqrt_discriminant) / (2 * B)
 
     # Return the physically meaningful solution (usually the positive one)
-    return {'Solution 1: ', temp1, 'Solution 2: ', temp2}
+    return {f"Solution 1: {temp1} ℃ ", f"Solution 2: {temp2} ℃"}

@@ -4,7 +4,7 @@ import re
 def truth_table(expr, variables) -> str:
     """
     Generate a truth table string for a logic expression using
-    + for OR, * for AND, ' for NOT, and ~ for XOR.
+    + for OR, * for AND, ~ for NOT.
     Example:
         print(truth_table("A*B' + C", ["A", "B", "C"]))
     """

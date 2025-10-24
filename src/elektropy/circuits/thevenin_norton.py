@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Tuple, Dict
+from typing import Dict
 
 # ------------------ Thevenin ------------------
 
@@ -18,13 +18,13 @@ class Thevenin:
         P_L = 0.0 if RL == 0 else (self.Vth**2) * RL / (denom**2)
         return {"V_L": V_L, "I_L": I_L, "P_L": P_L}
 
-    def max_power(self) -> Tuple[float, float]:
+    def max_power(self) -> Dict[str, str]:
         """Return (RL_opt, Pmax) for maximum power transfer."""
         if self.Rth < 0:
             raise ValueError("Rth must be >= 0")
         RL_opt = self.Rth
         Pmax = (self.Vth**2) / (4 * self.Rth) if self.Rth > 0 else 0.0
-        return RL_opt, Pmax
+        return {'RL': f"{RL_opt} Ω", 'Pmax': f"{Pmax} W"}
 
     def to_norton(self) -> "Norton":
         """Convert to Norton: In = Vth/Rth (0 if Rth==0), Rn = Rth."""
@@ -37,7 +37,7 @@ def thevenin_from_voc_isc(Voc: float, Isc: float) -> Thevenin:
     """Build Thevenin from open-circuit voltage and short-circuit current."""
     if Isc == 0:
         raise ValueError("Isc must be non-zero.")
-    return Thevenin(Vth=float(Voc), Rth=float(Voc / Isc))
+    return Thevenin(Vth=Voc, Rth=Voc / Isc)
 
 
 # ------------------ Norton ------------------
@@ -58,13 +58,13 @@ class Norton:
         P_L = V_L * I_L
         return {"V_L": V_L, "I_L": I_L, "P_L": P_L}
 
-    def max_power(self) -> Tuple[float, float]:
+    def max_power(self) -> Dict[str, float]:
         """Return (RL_opt, Pmax)."""
         if self.Rn < 0:
             raise ValueError("Rn must be >= 0")
         RL_opt = self.Rn
         Pmax = (self.In**2) * self.Rn / 4 if self.Rn > 0 else 0.0
-        return RL_opt, Pmax
+        return {'RL': f"{RL_opt} Ω", 'Pmax': f"{Pmax} W"}
 
     def to_thevenin(self) -> Thevenin:
         """Convert to Thevenin: Vth = In*Rn, Rth = Rn."""
@@ -76,4 +76,4 @@ def norton_from_voc_isc(Voc: float, Isc: float) -> Norton:
     if Isc == 0:
         raise ValueError("Isc must be non-zero.")
     R = float(Voc / Isc)
-    return Norton(In=float(Isc), Rn=R)
+    return Norton(In=Isc, Rn=R)

@@ -8,7 +8,7 @@ def series_resistance(*resistors) -> float:
     """
     Arguments: resitors (float or int)
     """
-    return sum(resistors)
+    return f"{sum(resistors)} Ω"
 
 def parallell_resistance(*resistors) -> float:
     """
@@ -18,5 +18,6 @@ def parallell_resistance(*resistors) -> float:
     """
     Arguments: resitors (float or int)
     """
+
     reciprocal = sum(1 / r for r in resistors)
-    return 1 / reciprocal if reciprocal != 0 else float('inf')
+    return f"{1 / reciprocal} Ω" if reciprocal != 0 else float('inf')

@@ -1,6 +1,6 @@
 import sympy as sp
 
-def node_voltage(equations, variables) -> dict:
+def node_voltage(equations, variables, decimals = 5) -> dict:
     """
     Solve a system of equations using the Node Voltage Method.
     """
@@ -17,6 +17,6 @@ def node_voltage(equations, variables) -> dict:
     if not solutions: 
         raise ValueError("No solution found for the given equations.")
     
-    result = {str(var): float(solutions[0][var]) for var in symbols}
+    result = {str(var): f"{round(float(solutions[var]), decimals)} V" for var in symbols}
 
     return result

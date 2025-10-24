@@ -73,3 +73,21 @@ def hexadecimal_to_binary(hex_str: str) -> str:
     """
     decimal_value = int(hex_str, base=16)
     return bin(decimal_value)[2:]
+
+def hexadecimal_to_decimal(hex_str: str) -> int:
+    """
+    Convert a hexadecimal string to a decimal integer.
+
+    :param hex_str: A string representing a hexadecimal number (e.g., 'B').
+    :return: The decimal integer equivalent of the hexadecimal string (e.g., 11).
+    """
+    return int(hex_str, base=16)
+
+def decimal_to_hexadecimal(decimal_int: int) -> str:
+    """
+    Convert a decimal integer to a hexadecimal string.
+
+    :param decimal_int: An integer representing a decimal number (e.g., 11).
+    :return: The hexadecimal string equivalent of the decimal integer (e.g., 'B').
+    """
+    return hex(decimal_int)[2:].upper()
