@@ -14,7 +14,6 @@
   - [Digital Logic](#digital-logic)
   - [Sensors](#sensors)
 - [Examples](#-examples)
-- [Dependencies](#-dependencies)
 - [Troubleshooting](#-troubleshooting)
 - [Contributors](#-contributors)
 - [License](#-license)
@@ -38,14 +37,6 @@
 pip install elektropy
 ```
 
-For development:
-
-```bash
-git clone https://github.com/danielols3n/elektropy.git
-cd elektropy
-pip install -e .
-```
-
 ---
 
 ## 🚀 Usage
@@ -53,7 +44,7 @@ pip install -e .
 ```python
 from elektropy import (
     series_resistance, pt100_temperature,
-    simplify_logic, truth_table, Thevenin,
+    simplify_logic, truth_table,
     mesh_current, voltage_divider
 )
 
@@ -66,6 +57,8 @@ print(truth_table("A + B*C'", ["A", "B", "C"]))
 ---
 
 ## 🧩 Modules
+
+All available functions in ElektroPy. Example usage is found below.
 
 ### 🔌 Circuits
 
@@ -80,10 +73,14 @@ print(truth_table("A + B*C'", ["A", "B", "C"]))
 | `current_divider(Iin, R1, R2)` | Current through R1 |
 | `mesh_current(equations, variables)` | Symbolic mesh current solver |
 | `node_voltage(equations, variables)` | Symbolic node voltage solver |
-| `Thevenin(Vth, Rth)` | Thevenin equivalent circuit class |
-| `Norton(In, Rn)` | Norton equivalent circuit class |
 | `thevenin_from_voc_isc(Voc, Isc)` | Build Thevenin from open/short |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`.for_load(RL)` | Calculate load voltage, current, power for the given RL value |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`.max_power()` | Calculates RL and the power for max power transfer |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`.to_norton()` | Convert to Norton equivalent |
 | `norton_from_voc_isc(Voc, Isc)` | Build Norton from open/short |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`.for_load(RL)` | Calculate load voltage, current, power for the given RL value |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`.max_power()` | Calculates RL and the power for max power transfer |
+| &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;`.to_thevenin()` | Convert to Thevenin equivalent |
 
 ---
 
@@ -149,18 +146,6 @@ print(th.for_load(10))  # {'V_L': ..., 'I_L': ..., 'P_L': ...}
 import sympy as sp
 eqs = ["10 - 2*I1 - 2*(I1 - I2)", "2*(I2 - I1) + 3*I2"]
 print(mesh_current(eqs, ["I1", "I2"]))
-```
-
----
-
-## 📦 Dependencies
-
-- `sympy` – symbolic computation for circuits and logic
-
-Install via:
-
-```bash
-pip install sympy
 ```
 
 ---
