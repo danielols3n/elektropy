@@ -50,7 +50,7 @@ from elektropy import (
 
 print(series_resistance(10, 20, 30))              # 60 Ω
 print(pt100_temperature(138.5))                   # Approx 100°C
-print(simplify_logic("A*B' + A*B"))               # A
+print(simplify_logic("A*B! + A*B"))               # A
 print(truth_table("A + B*C!", ["A", "B", "C"]))   # Returns truth table for the given expression
 ```
 
