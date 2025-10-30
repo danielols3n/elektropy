@@ -143,7 +143,7 @@ simplify_logic("A*B + A*B!")  # Output: A
 ### Generate a truth table
 
 ```python
-print(truth_table("A + B*C'", ["A", "B", "C"]))
+print(truth_table("A + B*C!", ["A", "B", "C"]))
 ```
 
 ### Convert between number systems
