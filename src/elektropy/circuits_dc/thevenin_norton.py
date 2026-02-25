@@ -9,7 +9,10 @@ class Thevenin:
     Rth: float  # ohms (>= 0)
 
     def for_load(self, RL: float) -> Dict[str, float]:
-        """Return V_L, I_L, P_L for a load RL (ohms)."""
+        """
+        Return V_L, I_L, P_L for a load RL (ohms).
+        """
+        
         if RL < 0:
             raise ValueError("RL must be >= 0")
         denom = self.Rth + RL
@@ -19,7 +22,10 @@ class Thevenin:
         return {"V_L": V_L, "I_L": I_L, "P_L": P_L}
 
     def max_power(self) -> Dict[str, str]:
-        """Return (RL_opt, Pmax) for maximum power transfer."""
+        """
+        Return (RL_opt, Pmax) for maximum power transfer.
+        """
+        
         if self.Rth < 0:
             raise ValueError("Rth must be >= 0")
         RL_opt = self.Rth
@@ -27,14 +33,20 @@ class Thevenin:
         return {'RL': f"{RL_opt} Ω", 'Pmax': f"{Pmax} W"}
 
     def to_norton(self) -> "Norton":
-        """Convert to Norton: In = Vth/Rth (0 if Rth==0), Rn = Rth."""
+        """
+        Convert to Norton: In = Vth/Rth (0 if Rth==0), Rn = Rth.
+        """
+        
         if self.Rth == 0:
             return Norton(In=float("inf"), Rn=0.0)  # ideal voltage source
         return Norton(In=self.Vth / self.Rth, Rn=self.Rth)
 
 
 def thevenin_from_voc_isc(Voc: float, Isc: float) -> Thevenin:
-    """Build Thevenin from open-circuit voltage and short-circuit current."""
+    """
+    Build Thevenin from open-circuit voltage and short-circuit current.
+    """
+    
     if Isc == 0:
         raise ValueError("Isc must be non-zero.")
     return Thevenin(Vth=Voc, Rth=Voc / Isc)
@@ -48,7 +60,10 @@ class Norton:
     Rn: float   # ohms (>= 0)
 
     def for_load(self, RL: float) -> Dict[str, float]:
-        """Return V_L, I_L, P_L for a load RL (ohms)."""
+        """
+        Return V_L, I_L, P_L for a load RL (ohms).
+        """
+        
         if RL < 0:
             raise ValueError("RL must be >= 0")
         denom = self.Rn + RL
@@ -59,7 +74,10 @@ class Norton:
         return {"V_L": V_L, "I_L": I_L, "P_L": P_L}
 
     def max_power(self) -> Dict[str, float]:
-        """Return (RL_opt, Pmax)."""
+        """
+        Return (RL_opt, Pmax).
+        """
+        
         if self.Rn < 0:
             raise ValueError("Rn must be >= 0")
         RL_opt = self.Rn
@@ -72,7 +90,10 @@ class Norton:
 
 
 def norton_from_voc_isc(Voc: float, Isc: float) -> Norton:
-    """Build Norton from open-circuit voltage and short-circuit current."""
+    """
+    Build Norton from open-circuit voltage and short-circuit current.
+    """
+    
     if Isc == 0:
         raise ValueError("Isc must be non-zero.")
     R = float(Voc / Isc)

@@ -36,6 +36,9 @@ def node_voltage(equations, variables, decimals=5) -> dict:
     equations (list): A list of sympy equations representing the circuit.
     variables (list): A list of symbols (as strings) representing node voltages.
     decimals (int): Number of decimals in the formatted output.
+
+    Returns:
+    dict: Mapping of variable name to formatted voltage value with unit (V).
     """
     symbols = _parse_symbols(variables)
     expressions = [sp.sympify(eq) for eq in equations]

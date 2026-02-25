@@ -1,9 +1,32 @@
-from .circuits.resistance import series_resistance, parallell_resistance
-from .circuits.node_voltage import node_voltage
-from .circuits.mesh_current import mesh_current
+from .circuits_dc.resistance import series_resistance, parallell_resistance
+from .circuits_dc.node_voltage import node_voltage
+from .circuits_dc.mesh_current import mesh_current
 from .circuits_ac.node_voltage import node_voltage as node_voltage_ac
 from .circuits_ac.mesh_current import mesh_current as mesh_current_ac
-from .circuits.basic_functions import power_vi, power_ri, power_rv, voltage_divider, current_divider
+from .circuits_ac.basics import (
+    impedance_r,
+    impedance_c,
+    impedance_l,
+    series_impedance,
+    parallel_impedance,
+    phasor,
+    to_polar,
+    ac_power,
+)
+from .circuits_dc.basic_functions import power_vi, power_ri, power_rv, voltage_divider, current_divider
+from .analog_electronics.opamps import (
+    opamp_inverting_gain,
+    opamp_inverting_output,
+    opamp_noninverting_gain,
+    opamp_noninverting_output,
+    opamp_voltage_follower,
+    opamp_summing_output,
+    opamp_differential_output,
+    opamp_integrator_output,
+    opamp_differentiator_output,
+    opamp_comparator,
+    opamp_schmitt_thresholds,
+)
 from .digitals.binary import (
     binary_to_decimal,
     decimal_to_binary,
@@ -16,7 +39,7 @@ from .digitals.binary import (
 )
 from .digitals.simplify_logic import simplify_logic
 from .digitals.truth_table import truth_table
-from .circuits.thevenin_norton import Thevenin, Norton, thevenin_from_voc_isc, norton_from_voc_isc
+from .circuits_dc.thevenin_norton import Thevenin, Norton, thevenin_from_voc_isc, norton_from_voc_isc
 from .sensory.pt100 import pt100_resistance, pt100_temperature
 from .sensory.wheatstone import wheatstone_balance_resistance, wheatstone_balance_voltage, wheatstone_resistance, wheatstone_voltage
 
@@ -27,6 +50,25 @@ __all__ = [
     "mesh_current",
     "node_voltage_ac",
     "mesh_current_ac",
+    "impedance_r",
+    "impedance_c",
+    "impedance_l",
+    "series_impedance",
+    "parallel_impedance",
+    "phasor",
+    "to_polar",
+    "ac_power",
+    "opamp_inverting_gain",
+    "opamp_inverting_output",
+    "opamp_noninverting_gain",
+    "opamp_noninverting_output",
+    "opamp_voltage_follower",
+    "opamp_summing_output",
+    "opamp_differential_output",
+    "opamp_integrator_output",
+    "opamp_differentiator_output",
+    "opamp_comparator",
+    "opamp_schmitt_thresholds",
     "power_vi",
     "power_ri",
     "power_rv",
