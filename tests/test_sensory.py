@@ -6,6 +6,8 @@ from elektropy import (
     wheatstone_balance_resistance,
     pt100_temperature,
     pt100_resistance,
+    db_power,
+    db_voltage,
 )
 
 
@@ -96,3 +98,25 @@ def test_pt100_temperature_roundtrip():
         assert any("Solution 1" in s for s in t_calc_set)
         assert any("Solution 2" in s for s in t_calc_set)
         assert all("℃" in s for s in t_calc_set)
+
+def test_db_power_values():
+    assert pytest.approx(db_power(1.0, 1.0), rel=1e-12) == 0.0
+    assert pytest.approx(db_power(1.0, 10.0), rel=1e-12) == 10.0
+    assert pytest.approx(db_power(10.0, 1.0), rel=1e-12) == -10.0
+
+
+def test_db_voltage_values():
+    assert pytest.approx(db_voltage(1.0, 1.0), rel=1e-12) == 0.0
+    assert pytest.approx(db_voltage(1.0, 10.0), rel=1e-12) == 20.0
+    assert pytest.approx(db_voltage(10.0, 1.0), rel=1e-12) == -20.0
+
+
+def test_db_invalid_inputs():
+    with pytest.raises(ValueError, match="power_in must be greater than zero"):
+        db_power(0.0, 1.0)
+    with pytest.raises(ValueError, match="power_out must be greater than zero"):
+        db_power(1.0, 0.0)
+    with pytest.raises(ValueError, match="voltage_in must be greater than zero"):
+        db_voltage(0.0, 1.0)
+    with pytest.raises(ValueError, match="voltage_out must be greater than zero"):
+        db_voltage(1.0, 0.0)

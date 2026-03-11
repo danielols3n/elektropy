@@ -9,9 +9,17 @@ from elektropy import (
     impedance_l,
     series_impedance,
     parallel_impedance,
+    voltage_divider_ac,
+    current_divider_ac,
     phasor,
     to_polar,
     ac_power,
+)
+from elektropy.circuits_ac import (
+    Thevenin,
+    Norton,
+    thevenin_from_voc_isc,
+    norton_from_voc_isc,
 )
 
 
@@ -57,6 +65,15 @@ def test_impedance_helpers():
     assert abs(zl - (31.415926535897935j)) < 1e-9
 
 
+def test_impedance_helpers_with_omega():
+    omega = 2 * sp.pi * 50
+    zc = impedance_c(10e-6, omega=float(omega))
+    zl = impedance_l(0.1, omega=float(omega))
+
+    assert abs(zc - (-318.3098861837907j)) < 1e-9
+    assert abs(zl - (31.415926535897935j)) < 1e-9
+
+
 def test_series_parallel_impedance():
     z1 = 10 + 5j
     z2 = 20 - 5j
@@ -66,6 +83,17 @@ def test_series_parallel_impedance():
 
     assert zs == 30 + 0j
     assert abs(zp - (7.5 + 1.6666666666666667j)) < 1e-12
+
+
+def test_ac_dividers():
+    z1 = 10 + 5j
+    z2 = 20 - 5j
+
+    v_out = voltage_divider_ac(100 + 0j, z1, z2)
+    i_out = current_divider_ac(10 + 0j, z1, z2)
+
+    assert abs(v_out - ((100 + 0j) * (z1 / (z1 + z2)))) < 1e-12
+    assert abs(i_out - ((10 + 0j) * (z2 / (z1 + z2)))) < 1e-12
 
 
 def test_phasor_and_polar():
@@ -78,7 +106,7 @@ def test_phasor_and_polar():
 
 
 def test_ac_power():
-    result = ac_power(230, 5, 36.86989764584402)
+    result = ac_power(voltage=230, current=5, phi_deg=36.86989764584402)
     assert pytest.approx(result["S"], rel=1e-9) == 1150
     assert pytest.approx(result["P"], rel=1e-9) == 920
     assert pytest.approx(result["Q"], rel=1e-9) == 690
@@ -95,21 +123,21 @@ def test_ac_power_with_peak_values():
 
 
 def test_ac_power_complex_from_v_and_i():
-    result = ac_power(voltage_rms=230 + 0j, current_rms=4 - 3j)
+    result = ac_power(voltage=230 + 0j, current=4 - 3j)
     assert pytest.approx(result["P"], rel=1e-9) == 920
     assert pytest.approx(result["Q"], rel=1e-9) == 690
     assert abs(result["S"] - (920 + 690j)) < 1e-9
 
 
 def test_ac_power_complex_from_i_and_z():
-    result = ac_power(current_rms=4 - 3j, impedance=36.8 + 27.6j)
+    result = ac_power(current=4 - 3j, impedance=36.8 + 27.6j)
     assert pytest.approx(result["P"], rel=1e-9) == 920
     assert pytest.approx(result["Q"], rel=1e-9) == 690
     assert abs(result["S"] - (920 + 690j)) < 1e-9
 
 
 def test_ac_power_complex_from_v_and_z():
-    result = ac_power(voltage_rms=230 + 0j, impedance=36.8 + 27.6j)
+    result = ac_power(voltage=230 + 0j, impedance=36.8 + 27.6j)
     assert pytest.approx(result["P"], rel=1e-9) == 920
     assert pytest.approx(result["Q"], rel=1e-9) == 690
     assert abs(result["S"] - (920 + 690j)) < 1e-9
@@ -121,16 +149,95 @@ def test_invalid_impedance_inputs():
     with pytest.raises(ValueError):
         impedance_c(10e-6, 0)
     with pytest.raises(ValueError):
+        impedance_c(10e-6, frequency=50, omega=314.1592653589793)
+    with pytest.raises(ValueError):
+        impedance_c(10e-6)
+    with pytest.raises(ValueError):
+        impedance_c(10e-6, omega=0)
+    with pytest.raises(ValueError):
         impedance_l(-1, 50)
     with pytest.raises(ValueError):
         impedance_l(1, -50)
     with pytest.raises(ValueError):
+        impedance_l(1, frequency=50, omega=314.1592653589793)
+    with pytest.raises(ValueError):
+        impedance_l(1)
+    with pytest.raises(ValueError):
+        impedance_l(1, omega=-1)
+    with pytest.raises(ValueError):
         parallel_impedance()
     with pytest.raises(ValueError):
-        ac_power(voltage_rms=230)
+        voltage_divider_ac(10, 5 + 0j, -5 + 0j)
     with pytest.raises(ValueError):
-        ac_power(voltage_rms=230, impedance=0)
+        current_divider_ac(10, 5 + 0j, -5 + 0j)
     with pytest.raises(ValueError):
-        ac_power(voltage_rms=230, voltage=230)
+        ac_power(voltage=230)
     with pytest.raises(ValueError):
-        ac_power(current_rms=5, current=5)
+        ac_power(voltage=230, impedance=0)
+
+
+def test_thevenin_norton_from_voc_isc_ac():
+    voc = 12 + 6j
+    isc = 3 - 1j
+
+    th = thevenin_from_voc_isc(voc, isc)
+    no = norton_from_voc_isc(voc, isc)
+
+    assert th.Vth == voc
+    assert no.In == isc
+    assert abs(th.Zth - (voc / isc)) < 1e-12
+    assert abs(no.Zn - (voc / isc)) < 1e-12
+
+
+def test_thevenin_norton_conversion_roundtrip():
+    v_th = 20 - 10j
+    z_th = 5 + 2j
+
+    th = Thevenin(Vth=v_th, Zth=z_th)
+    no = th.to_norton()
+    th_round = no.to_thevenin()
+
+    assert abs(no.In - (v_th / z_th)) < 1e-12
+    assert no.Zn == z_th
+    assert abs(th_round.Vth - v_th) < 1e-12
+    assert th_round.Zth == z_th
+
+
+def test_thevenin_norton_load_equivalence():
+    v_th = 18 + 4j
+    z_th = 3 + 1j
+    z_load = 9 - 2j
+
+    th_model = Thevenin(Vth=v_th, Zth=z_th)
+    no_model = th_model.to_norton()
+
+    th = th_model.for_load(z_load)
+    no = no_model.for_load(z_load)
+
+    assert abs(th["V_L"] - no["V_L"]) < 1e-12
+    assert abs(th["I_L"] - no["I_L"]) < 1e-12
+    assert abs(th["S_L"] - no["S_L"]) < 1e-12
+
+
+def test_thevenin_norton_max_power():
+    th = Thevenin(Vth=10 + 0j, Zth=4 + 3j)
+    no = Norton(In=(10 + 0j) / (4 + 3j), Zn=4 + 3j)
+
+    th_mp = th.max_power()
+    no_mp = no.max_power()
+
+    assert th_mp["ZL_opt"] == (4 - 3j)
+    assert no_mp["ZL_opt"] == (4 - 3j)
+    assert pytest.approx(th_mp["Pmax"], rel=1e-12) == 6.25
+    assert pytest.approx(no_mp["Pmax"], rel=1e-12) == 6.25
+
+
+def test_thevenin_norton_invalid_inputs():
+    with pytest.raises(ValueError):
+        thevenin_from_voc_isc(10, 0)
+    with pytest.raises(ValueError):
+        norton_from_voc_isc(10, 0)
+    with pytest.raises(ValueError):
+        Thevenin(Vth=10, Zth=5).for_load(-5)
+    with pytest.raises(ValueError):
+        Norton(In=2, Zn=5).for_load(-5)

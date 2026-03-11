@@ -1,14 +1,16 @@
 from .circuits_dc.resistance import series_resistance, parallell_resistance
-from .circuits_dc.node_voltage import node_voltage
-from .circuits_dc.mesh_current import mesh_current
-from .circuits_ac.node_voltage import node_voltage as node_voltage_ac
-from .circuits_ac.mesh_current import mesh_current as mesh_current_ac
+from .circuits_dc.node_voltage import node_voltage_dc
+from .circuits_dc.mesh_current import mesh_current_dc
+from .circuits_ac.node_voltage import node_voltage_ac
+from .circuits_ac.mesh_current import mesh_current_ac
 from .circuits_ac.basics import (
     impedance_r,
     impedance_c,
     impedance_l,
     series_impedance,
     parallel_impedance,
+    voltage_divider_ac,
+    current_divider_ac,
     phasor,
     to_polar,
     ac_power,
@@ -25,7 +27,10 @@ from .analog_electronics.opamps import (
     opamp_integrator_output,
     opamp_differentiator_output,
     opamp_comparator,
-    opamp_schmitt_thresholds,
+)
+from .analog_electronics.diodes import (
+    half_wave_rectifier,
+    full_wave_rectifier,
 )
 from .digitals.binary import (
     binary_to_decimal,
@@ -39,15 +44,34 @@ from .digitals.binary import (
 )
 from .digitals.simplify_logic import simplify_logic
 from .digitals.truth_table import truth_table
-from .circuits_dc.thevenin_norton import Thevenin, Norton, thevenin_from_voc_isc, norton_from_voc_isc
-from .sensory.pt100 import pt100_resistance, pt100_temperature
-from .sensory.wheatstone import wheatstone_balance_resistance, wheatstone_balance_voltage, wheatstone_resistance, wheatstone_voltage
+from .circuits_dc.thevenin_norton import (
+    Thevenin,
+    Norton,
+    thevenin_from_voc_isc as thevenin_from_voc_isc_dc,
+    norton_from_voc_isc as norton_from_voc_isc_dc,
+)
+from .circuits_ac.thevenin_norton import (
+    Thevenin as TheveninAC,
+    Norton as NortonAC,
+    thevenin_from_voc_isc as thevenin_from_voc_isc_ac,
+    norton_from_voc_isc as norton_from_voc_isc_ac,
+)
+from .sensory import (
+    pt100_resistance,
+    pt100_temperature,
+    wheatstone_balance_resistance,
+    wheatstone_balance_voltage,
+    wheatstone_resistance,
+    wheatstone_voltage,
+    db_power,
+    db_voltage,
+)
 
 __all__ = [
     "series_resistance",
     "parallell_resistance",
-    "node_voltage",
-    "mesh_current",
+    "node_voltage_dc",
+    "mesh_current_dc",
     "node_voltage_ac",
     "mesh_current_ac",
     "impedance_r",
@@ -55,6 +79,8 @@ __all__ = [
     "impedance_l",
     "series_impedance",
     "parallel_impedance",
+    "voltage_divider_ac",
+    "current_divider_ac",
     "phasor",
     "to_polar",
     "ac_power",
@@ -68,7 +94,8 @@ __all__ = [
     "opamp_integrator_output",
     "opamp_differentiator_output",
     "opamp_comparator",
-    "opamp_schmitt_thresholds",
+    "half_wave_rectifier",
+    "full_wave_rectifier",
     "power_vi",
     "power_ri",
     "power_rv",
@@ -82,14 +109,20 @@ __all__ = [
     "truth_table",
     "decimal_to_twos_comp",
     "twos_comp_to_decimal",
-    "thevenin_from_voc_isc",
-    "norton_from_voc_isc",
+    "thevenin_from_voc_isc_dc",
+    "norton_from_voc_isc_dc",
+    "TheveninAC",
+    "NortonAC",
+    "thevenin_from_voc_isc_ac",
+    "norton_from_voc_isc_ac",
     "pt100_resistance",
     "pt100_temperature",
     "wheatstone_balance_resistance",
     "wheatstone_balance_voltage",
     "wheatstone_resistance",
     "wheatstone_voltage",
+    "db_power",
+    "db_voltage",
     "decimal_to_hexadecimal",
     "hexadecimal_to_decimal",
 ]

@@ -14,44 +14,73 @@ def impedance_r(resistance: float) -> complex:
     return complex(resistance, 0.0)
 
 
-def impedance_c(capacitance: float, frequency: float) -> complex:
+def _resolve_omega(
+    frequency: float | None,
+    omega: float | None,
+    *,
+    allow_zero: bool,
+) -> float:
     """
-    Return the capacitor impedance in ohms for a given frequency.
+    Resolve angular frequency from either frequency (Hz) or omega (rad/s).
+    """
+    if (frequency is None) == (omega is None):
+        raise ValueError("Provide exactly one of frequency or omega.")
+
+    if frequency is not None:
+        if allow_zero:
+            if frequency < 0:
+                raise ValueError("Frequency cannot be negative.")
+        else:
+            if frequency <= 0:
+                raise ValueError("Frequency must be greater than zero.")
+        return 2 * math.pi * frequency
+
+    assert omega is not None
+    if allow_zero:
+        if omega < 0:
+            raise ValueError("Omega cannot be negative.")
+    else:
+        if omega <= 0:
+            raise ValueError("Omega must be greater than zero.")
+    return omega
+
+
+def impedance_c(capacitance: float, frequency: float | None = None, omega: float | None = None) -> complex:
+    """
+    Return the capacitor impedance in ohms.
 
     Arguments:
     capacitance (float): Capacitance in farads (must be > 0).
-    frequency (float): Frequency in hertz (must be > 0).
+    frequency (float | None): Frequency in hertz (must be > 0).
+    omega (float | None): Angular frequency in rad/s (must be > 0).
 
     Returns:
     complex: Capacitive impedance Zc = 1/(j*w*C).
     """
     if capacitance <= 0:
         raise ValueError("Capacitance must be greater than zero.")
-    if frequency <= 0:
-        raise ValueError("Frequency must be greater than zero.")
 
-    omega = 2 * math.pi * frequency
-    return -1j / (omega * capacitance)
+    omega_value = _resolve_omega(frequency=frequency, omega=omega, allow_zero=False)
+    return -1j / (omega_value * capacitance)
 
 
-def impedance_l(inductance: float, frequency: float) -> complex:
+def impedance_l(inductance: float, frequency: float | None = None, omega: float | None = None) -> complex:
     """
-    Return the inductor impedance in ohms for a given frequency.
+    Return the inductor impedance in ohms.
 
     Arguments:
     inductance (float): Inductance in henries (must be >= 0).
-    frequency (float): Frequency in hertz (must be >= 0).
+    frequency (float | None): Frequency in hertz (must be >= 0).
+    omega (float | None): Angular frequency in rad/s (must be >= 0).
 
     Returns:
     complex: Inductive impedance Zl = j*w*L.
     """
     if inductance < 0:
         raise ValueError("Inductance cannot be negative.")
-    if frequency < 0:
-        raise ValueError("Frequency cannot be negative.")
 
-    omega = 2 * math.pi * frequency
-    return 1j * omega * inductance
+    omega_value = _resolve_omega(frequency=frequency, omega=omega, allow_zero=True)
+    return 1j * omega_value * inductance
 
 
 def series_impedance(*impedances: complex) -> complex:
@@ -118,12 +147,10 @@ def to_polar(value: complex) -> dict[str, float]:
     """
     magnitude = abs(value)
     phase_deg = math.degrees(math.atan2(value.imag, value.real))
-    return {"magnitude": magnitude, "phase_deg": phase_deg}
+    return {"Magnitude": magnitude, "Phase_deg": phase_deg}
 
 
 def ac_power(
-    voltage_rms: float | complex | None = None,
-    current_rms: float | complex | None = None,
     voltage: float | complex | None = None,
     current: float | complex | None = None,
     values_are_rms: bool = True,
@@ -134,8 +161,6 @@ def ac_power(
     Calculate AC complex power.
 
     Arguments:
-    voltage_rms (float | complex | None): RMS voltage phasor in volts.
-    current_rms (float | complex | None): RMS current phasor in amperes.
     voltage (float | complex | None): Voltage value in volts (RMS if values_are_rms=True, otherwise peak).
     current (float | complex | None): Current value in amperes (RMS if values_are_rms=True, otherwise peak).
     values_are_rms (bool): Set False if voltage/current are provided as peak values.
@@ -146,17 +171,9 @@ def ac_power(
     dict[str, float | complex]: Active power (P), reactive power (Q),
     complex power (S), and power factor (pf).
     """
-    if voltage_rms is not None and voltage is not None:
-        raise ValueError("Provide only one of voltage_rms or voltage.")
-    if current_rms is not None and current is not None:
-        raise ValueError("Provide only one of current_rms or current.")
-
-    voltage_input = voltage_rms if voltage_rms is not None else voltage
-    current_input = current_rms if current_rms is not None else current
-
     scale = 1.0 if values_are_rms else math.sqrt(2)
-    v_rms = complex(voltage_input) / scale if voltage_input is not None else None
-    i_rms = complex(current_input) / scale if current_input is not None else None
+    v_rms = complex(voltage) / scale if voltage is not None else None
+    i_rms = complex(current) / scale if current is not None else None
 
     if phi_deg is not None:
         if v_rms is None or i_rms is None:
@@ -188,3 +205,35 @@ def ac_power(
     s_abs = abs(s)
     pf = p / s_abs if s_abs != 0 else 0.0
     return {"P": p, "Q": q, "S": s, "pf": pf}
+
+def voltage_divider_ac(Vin: float | complex, Z1: complex, Z2: complex) -> complex:
+    """
+    Calculate the output voltage of an AC voltage divider.
+
+    Arguments:
+    Vin (float | complex): Input voltage in volts.
+    Z1 (complex): Impedance of the first element in ohms.
+    Z2 (complex): Impedance of the second element in ohms.
+
+    Returns:
+    complex: Output voltage across Z1 in volts.
+    """
+    if Z1 + Z2 == 0:
+        raise ValueError("Total impedance cannot be zero.")
+    return Vin * (Z1 / (Z1 + Z2))
+
+def current_divider_ac(Iin: float | complex, Z1: complex, Z2: complex) -> complex:
+    """
+    Calculate the output current of an AC current divider.
+
+    Arguments:
+    Iin (float | complex): Input current in amperes.
+    Z1 (complex): Impedance of the first branch in ohms.
+    Z2 (complex): Impedance of the second branch in ohms.
+
+    Returns:
+    complex: Output current through Z1 in amperes.
+    """
+    if Z1 + Z2 == 0:
+        raise ValueError("Total impedance cannot be zero.")
+    return Iin * (Z2 / (Z1 + Z2))

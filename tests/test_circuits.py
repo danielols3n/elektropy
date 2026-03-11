@@ -5,8 +5,8 @@ from sympy import symbols, Eq
 from elektropy import (
     series_resistance,
     parallell_resistance,
-    node_voltage,
-    mesh_current,
+    node_voltage_dc,
+    mesh_current_dc,
     power_vi,
     power_ri,
     power_rv,
@@ -14,8 +14,12 @@ from elektropy import (
     current_divider,
     Thevenin,
     Norton,
-    thevenin_from_voc_isc,
-    norton_from_voc_isc,
+    thevenin_from_voc_isc_dc,
+    norton_from_voc_isc_dc,
+    TheveninAC,
+    NortonAC,
+    thevenin_from_voc_isc_ac,
+    norton_from_voc_isc_ac,
 )
 
 
@@ -46,7 +50,7 @@ def test_node_voltage():
     V1, V2 = symbols("V1 V2")
     equations = [Eq(V1 + V2, 10), Eq(V1 - V2, 4)]
     variables = ["V1", "V2"]
-    result = node_voltage(equations, variables)
+    result = node_voltage_dc(equations, variables)
     # If your function returns strings like {"V1": "7.0 V", "V2": "3.0 V"}
     v1 = float(result["V1"].split()[0]) if isinstance(result["V1"], str) else result["V1"]
     v2 = float(result["V2"].split()[0]) if isinstance(result["V2"], str) else result["V2"]
@@ -58,7 +62,7 @@ def test_mesh_current():
     I1, I2 = symbols("I1 I2")
     equations = [Eq(I1 + I2, 5), Eq(I1 - I2, 1)]
     variables = ["I1", "I2"]
-    result = mesh_current(equations, variables)
+    result = mesh_current_dc(equations, variables)
     # If result contains "A"
     i1 = float(result["I1"].split()[0]) if isinstance(result["I1"], str) else result["I1"]
     i2 = float(result["I2"].split()[0]) if isinstance(result["I2"], str) else result["I2"]
@@ -94,3 +98,17 @@ def test_current_divider_equal_resistors():
     assert "A" in result
     value = float(result.split()[0])
     assert pytest.approx(value, rel=1e-9) == itot / 2
+
+
+def test_ac_thevenin_norton_exports():
+    th = thevenin_from_voc_isc_ac(10 + 2j, 2 - 1j)
+    no = norton_from_voc_isc_ac(10 + 2j, 2 - 1j)
+    assert isinstance(th, TheveninAC)
+    assert isinstance(no, NortonAC)
+
+
+def test_dc_thevenin_norton_exports():
+    th = thevenin_from_voc_isc_dc(10.0, 2.0)
+    no = norton_from_voc_isc_dc(10.0, 2.0)
+    assert isinstance(th, Thevenin)
+    assert isinstance(no, Norton)

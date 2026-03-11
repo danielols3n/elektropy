@@ -9,7 +9,10 @@ from .opamps import (
     opamp_integrator_output,
     opamp_differentiator_output,
     opamp_comparator,
-    opamp_schmitt_thresholds,
+)
+from .diodes import (
+    half_wave_rectifier,
+    full_wave_rectifier,
 )
 
 __all__ = [
@@ -23,5 +26,6 @@ __all__ = [
     "opamp_integrator_output",
     "opamp_differentiator_output",
     "opamp_comparator",
-    "opamp_schmitt_thresholds",
+    "half_wave_rectifier",
+    "full_wave_rectifier",
 ]

@@ -28,7 +28,7 @@ def _format_complex_value(value, decimals: int, unit: str) -> str:
     return f"{real} {sign} {abs(imag)}j {unit}"
 
 
-def mesh_current(equations, variables, decimals=5) -> dict:
+def mesh_current_ac(equations, variables, decimals=5) -> dict:
     """
     Solve a system of equations using the Mesh Current Method with complex values.
 

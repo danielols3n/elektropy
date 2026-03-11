@@ -28,7 +28,7 @@ def _format_complex_value(value, decimals: int, unit: str) -> str:
     return f"{real} {sign} {abs(imag)}j {unit}"
 
 
-def node_voltage(equations, variables, decimals=5) -> dict:
+def node_voltage_ac(equations, variables, decimals=5) -> dict:
     """
     Solve a system of equations using the Node Voltage Method with complex values.
 

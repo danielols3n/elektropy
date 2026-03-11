@@ -1,4 +1,4 @@
-def pt100_resistance(temperature_celsius: float, R0: float = 100.0, A: float = 3.9083e-3, B: float = -5.775e-7) -> float:
+def pt100_resistance(temperature_celsius: float, R0: float = 100.0, A: float = 3.9083e-3, B: float = -5.775e-7) -> str:
     """
     Calculate the resistance of a PT100 sensor at a given temperature.
     temperature_celsius: Temperature in degrees Celsius
@@ -11,7 +11,7 @@ def pt100_resistance(temperature_celsius: float, R0: float = 100.0, A: float = 3
     R = (R0 * (1 + A * (temperature_celsius)) + (B * temperature_celsius**2))
     return f"{R} Ω"
 
-def pt100_temperature(resistance_ohms: float, R0: float = 100.0, A: float = 3.9083e-3, B: float = -5.775e-7) -> float:
+def pt100_temperature(resistance_ohms: float, R0: float = 100.0, A: float = 3.9083e-3, B: float = -5.775e-7) -> str:
     """
     Calculate the temperature in Celsius from the resistance of a PT100 sensor.
     resistance_ohms: Resistance in ohms
