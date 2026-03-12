@@ -204,14 +204,11 @@ print(power_rv(10, 12))
 ### 🧮 Circuits DC: Node Voltage and Mesh Current
 
 ```python
-from sympy import symbols, Eq
 from elektropy import node_voltage_dc, mesh_current_dc
 
-V1, V2 = symbols("V1 V2")
-print(node_voltage_dc([Eq(V1 + V2, 10), Eq(V1 - V2, 4)], ["V1", "V2"]))
+print(node_voltage_dc(["u1/6 + u2/8 -5", "u2/8 + 2"], ["u1", "u2"]))
 
-I1, I2 = symbols("I1 I2")
-print(mesh_current_dc([Eq(I1 + I2, 5), Eq(I1 - I2, 1)], ["I1", "I2"]))
+print(mesh_current_dc(["i1/4 + i2/6 - 5", "i1/4 - 22"], ["i1", "i2"]))
 ```
 
 ### 🔁 Circuits DC: Thevenin and Norton
@@ -254,27 +251,25 @@ z_l = impedance_l(0.1, frequency=50)
 print(z_r, z_c, z_l)
 print(series_impedance(z_r, z_l))
 print(parallel_impedance(z_r, z_l))
-print(voltage_divider_ac(100 + 0j, 10 + 5j, 20 - 5j))
+print(to_polar(voltage_divider_ac(100 + 0j, 10 + 5j, 20 - 5j)))
 print(current_divider_ac(10 + 0j, 10 + 5j, 20 - 5j))
+
+
 
 p = phasor(10, 30)
 print(p, to_polar(p))
 print(ac_power(voltage=230, current=5, phi_deg=36.87))
-print(ac_power(current=4 - 3j, impedance=36.8 + 27.6j))
+print(ac_power(current=4 - 3j, impedance=36.8 + 27.6j, values_are_rms=False))
 ```
 
 ### 🔄 Circuits AC: Node Voltage and Mesh Current
 
 ```python
-from sympy import symbols, Eq
 from elektropy import node_voltage_ac, mesh_current_ac
 
-V1, V2 = symbols("V1 V2")
-print(node_voltage_ac([Eq(V1 + V2, 3 - 1j), Eq(V1 - V2, 1 + 3j)], ["V1", "V2"]))
+print(node_voltage_ac(["-5 + u1/(4-3j)", "10 - u2/(4+8j)"], ["u1", "u2"]))
+print(mesh_current_ac(["-5 + i1/(4+3j)", "10 - i2/(4-8j)"], ["i1", "i2"]))
 
-I1, I2 = symbols("I1 I2")
-eqs = [Eq((1 + 1j) * I1 + I2, 1 + 2j), Eq(I1 + (2 - 1j) * I2, 4 - 2j)]
-print(mesh_current_ac(eqs, ["I1", "I2"]))
 ```
 
 ### 🔁 Circuits AC: Thevenin and Norton
@@ -302,24 +297,16 @@ from elektropy import (
     opamp_inverting_output,
     opamp_noninverting_gain,
     opamp_noninverting_output,
-    opamp_voltage_follower,
     opamp_summing_output,
     opamp_differential_output,
-    opamp_integrator_output,
-    opamp_differentiator_output,
-    opamp_comparator,
 )
 
 print(opamp_inverting_gain(1000, 10000))
 print(opamp_inverting_output(0.2, 1000, 10000))
 print(opamp_noninverting_gain(1000, 9000))
 print(opamp_noninverting_output(0.2, 1000, 9000))
-print(opamp_voltage_follower(1.234))
 print(opamp_summing_output([1.0, 0.5], [1000, 2000], 10000))
 print(opamp_differential_output(1.2, 0.4, 1000, 10000))
-print(opamp_integrator_output(1.0, 10000, 1e-6, 0.02))
-print(opamp_differentiator_output(0.0, 1.0, 0.001, 10000, 1e-6))
-print(opamp_comparator(2.0, 1.0, v_high=12.0, v_low=-12.0))
 ```
 
 ### 🔋 Analog Electronics: Rectifiers
